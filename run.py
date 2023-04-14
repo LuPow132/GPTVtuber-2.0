@@ -100,9 +100,9 @@ def run():
         print("*Chat is connected!")
 
         #Set up display label
-        Responsed = customtkinter.CTkLabel(master=Innerframe,text="Responsed",font=("Roboto",28),wraplength=1500)
+        Responsed = customtkinter.CTkLabel(master=Innerframe,text="Responsed",font=("Roboto",28),wraplength=1200)
         Responsed.pack()
-        ChatLabel = customtkinter.CTkLabel(master=Innerframe,text="Message",font=("Roboto",20),wraplength=1200)
+        ChatLabel = customtkinter.CTkLabel(master=Innerframe,text="Message",font=("Roboto",20),wraplength=1000)
         ChatLabel.pack(pady=10)
         RunButton.configure(state="disabled")
         RunButton.configure(text="Running")
@@ -122,7 +122,7 @@ def ChatConnected():
             message = f'{c.author.name}:{c.message}'
             print(message)
             reply = GPTResponsed(message)
-            speakEN(reply.replace("Luana:", ""))
+            speakEN(reply.replace("Luana-chan:", ""))
             Responsed.configure(text=reply)
             ChatLabel.configure(text=message)
             appendTextFile("Conversation_saver.txt",f"\n{message}")
