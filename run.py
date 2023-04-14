@@ -5,10 +5,12 @@ import openai
 import pytchat
 import AUTH_KEY
 import azure.cognitiveservices.speech as speechsdk
+import text2emotion as te
 
 #Random Variable
-Running = False
 ChatgptModel = 'gpt-3.5-turbo'
+pitch = "+20Hz"
+tts_model = "en-US-JaneNeural"
 openai.api_key = AUTH_KEY.OPENAI_KEY
 AzureApiKey = AUTH_KEY.AZURE_KEY
 
@@ -42,9 +44,33 @@ def overwirteTextFile(filename,text):
     with open(filename,"w") as f:
         f.write(text)
         f.close()
+def ClearPreviousConversationLog():
+    clearTextFile("Conversation_saver.txt")
+    print("clear conversation file already!")
+
 
 def speakEN(text):
-    ssml_string = f'<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="en-US-JaneNeural" style="cheerful"><prosody pitch="+20Hz">{text}</prosody></voice></speak>'
+    emotion_dict = te.get_emotion(text)
+    max_emotion = max(emotion_dict, key=emotion_dict.get)
+
+    if "whisper" in text or "whispering" in text:
+        emotion = "Whispering"
+    elif "shouting" in text or "shout" in text or "yell" in text or "SHOUT" in text or "YELL" in text:
+        emotion = "Shouting"
+    elif max_emotion == "Happy":
+        emotion = "Cheerful"
+    elif max_emotion == "Angry":
+        emotion = "Angry"
+    elif max_emotion == "Surpise":
+        emotion = "Excited"
+    elif max_emotion == "Sad":
+        emotion = "Sad"
+    elif max_emotion == "Fear":
+        emotion = "Terrified"
+    else:
+        emotion = "Default"
+
+    ssml_string = f'<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="{tts_model}" style="{emotion}"><prosody pitch="{pitch}">{text}</prosody></voice></speak>'
     result = speech_synthesizer.speak_ssml_async(ssml_string).get()
 
 def GPTResponsed(text):
@@ -74,9 +100,9 @@ def run():
         print("*Chat is connected!")
 
         #Set up display label
-        Responsed = customtkinter.CTkLabel(master=Innerframe,text="Responsed",font=("Roboto",28),wraplength=1000)
+        Responsed = customtkinter.CTkLabel(master=Innerframe,text="Responsed",font=("Roboto",28),wraplength=1500)
         Responsed.pack()
-        ChatLabel = customtkinter.CTkLabel(master=Innerframe,text="Message",font=("Roboto",20),wraplength=800)
+        ChatLabel = customtkinter.CTkLabel(master=Innerframe,text="Message",font=("Roboto",20),wraplength=1200)
         ChatLabel.pack(pady=10)
         RunButton.configure(state="disabled")
         RunButton.configure(text="Running")
@@ -99,7 +125,8 @@ def ChatConnected():
             speakEN(reply.replace("Luana:", ""))
             Responsed.configure(text=reply)
             ChatLabel.configure(text=message)
-            
+            appendTextFile("Conversation_saver.txt",f"\n{message}")
+            appendTextFile("Conversation_saver.txt",f"\n{reply}")
 
     root.after(10, ChatConnected)
 
@@ -121,9 +148,12 @@ StreamIDInput = StringVar()
 StreamIDInputField = customtkinter.CTkEntry(master=frame,textvariable=StreamIDInput,width=500,height=30)
 StreamIDInputField.pack(padx=10)
 
-RunButton = customtkinter.CTkButton(master=frame,text="Run",command=run)
+RunButton = customtkinter.CTkButton(master=frame,text="Run",font=("Roboto",16),command=run)
 RunButton.pack(pady=5)
 
+ClearConversationLog = customtkinter.CTkButton(master=frame,text="Clear Conversation",font=("Roboto",16),command=ClearPreviousConversationLog)
+ClearConversationLog.pack(pady=2)
+    
 Innerframe = customtkinter.CTkFrame(master=frame)
 
 root.mainloop()
