@@ -1,15 +1,27 @@
-import AUTH_KEY
-import azure.cognitiveservices.speech as speechsdk
+import asyncio, pyvts
 
-pitch = "+20Hz"
-tts_model = "en-US-JaneNeural"
-AzureApiKey = AUTH_KEY.AZURE_KEY
+plugin_info = {
+    "plugin_name": "trigger hotkey",
+    "developer": "OverHome",
+    "authentication_token_path": "./pyvts_token.txt",
+}
 
-speech_config = speechsdk.SpeechConfig(subscription=AzureApiKey, region="southeastasia")
-audio_config = speechsdk.audio.AudioOutputConfig(filename="opening.wav")
-speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config,audio_config=audio_config)
 
-text = "science bitch! I'm go now fuck you all! Bye"
+async def main():
+    myvts = pyvts.vts(plugin_info=plugin_info)
+    await myvts.connect()
+    await myvts.request_authenticate_token()  # get token
+    await myvts.request_authenticate()  # use token
 
-ssml_string = f'<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="{tts_model}" style="Shouting"><prosody pitch="{pitch}">{text}</prosody></voice></speak>'
-result = speech_synthesizer.speak_ssml_async(ssml_string).get()
+    response_data = await myvts.request(myvts.vts_request.requestHotKeyList())
+    hotkey_list = []
+    for hotkey in response_data["data"]["availableHotkeys"]:
+        hotkey_list.append(hotkey["name"])
+    print(hotkey_list)  # ['My Animation 1', 'My Animation 2', ...]
+
+    send_hotkey_request = myvts.vts_request.requestTriggerHotKey(hotkey_list[0])
+    await myvts.request(send_hotkey_request)  # send request to play 'My Animation 1'
+    await myvts.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())

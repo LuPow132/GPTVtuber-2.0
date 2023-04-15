@@ -25,23 +25,23 @@ customtkinter.set_default_color_theme("blue")
 
 #Random Bullshit function
 def appendTextFile(filename,input):
-    with open(filename,"a") as f:
+    with open(filename,"a", encoding='utf-8') as f:
         f.write(input)
         f.close()
 
 def readTextFile(filename):
-    with open(filename,"r") as f:
+    with open(filename,"r", encoding='utf-8') as f:
         read = f.read()
         f.close()
         return read
 
 def clearTextFile(filename):
-    with open(filename,"w") as f:
+    with open(filename,"w", encoding='utf-8') as f:
         f.write("")
         f.close()
 
 def overwirteTextFile(filename,text):
-    with open(filename,"w") as f:
+    with open(filename,"w", encoding='utf-8') as f:
         f.write(text)
         f.close()
 def ClearPreviousConversationLog():
@@ -61,12 +61,8 @@ def speakEN(text):
         emotion = "Cheerful"
     elif max_emotion == "Angry":
         emotion = "Angry"
-    elif max_emotion == "Surpise":
-        emotion = "Excited"
     elif max_emotion == "Sad":
         emotion = "Sad"
-    elif max_emotion == "Fear":
-        emotion = "Terrified"
     else:
         emotion = "Default"
 
@@ -77,7 +73,7 @@ def GPTResponsed(text):
     response = openai.ChatCompletion.create(
     model=ChatgptModel,
     messages=[
-        {"role": "system", "content": readTextFile("Preprompt.txt") + readTextFile("Conversation_saver.txt")},
+        {"role": "system", "content": readTextFile("Preprompt.txt") + readTextFile("TrainModel.txt") + readTextFile("Conversation_saver.txt")},
         {"role": "user", "content": text}
     ],
     temperature=.7,
