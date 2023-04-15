@@ -6,6 +6,10 @@ import pytchat
 import AUTH_KEY
 import azure.cognitiveservices.speech as speechsdk
 import text2emotion as te
+import asyncio 
+import pyvts
+import random
+
 
 #Random Variable
 ChatgptModel = 'gpt-3.5-turbo'
@@ -13,6 +17,13 @@ pitch = "+20Hz"
 tts_model = "en-US-JaneNeural"
 openai.api_key = AUTH_KEY.OPENAI_KEY
 AzureApiKey = AUTH_KEY.AZURE_KEY
+plugin_info = {
+    "plugin_name": "GPT Vtube",
+    "developer": "LuPow",
+    "authentication_token_path": "./token.txt"
+}
+global myvts
+myvts = pyvts.vts(plugin_info=plugin_info)
 
 #Azure TTS config
 speech_config = speechsdk.SpeechConfig(subscription=AzureApiKey, region="southeastasia")
@@ -45,9 +56,11 @@ def overwirteTextFile(filename,text):
         f.write(text)
         f.close()
 def ClearPreviousConversationLog():
+
     clearTextFile("Conversation_saver.txt")
     print("clear conversation file already!")
 
+#advance function
 
 def speakEN(text):
     emotion_dict = te.get_emotion(text)
@@ -85,6 +98,23 @@ def GPTResponsed(text):
     print(f'*Succes Generate response token spend: {response.usage.total_tokens}')
     return response.choices[0].message.content
 
+async def connect_auth():
+    await myvts.connect()
+    await myvts.request_authenticate_token()
+    await myvts.request_authenticate()
+    await myvts.close()
+
+async def trigger(choice):
+    await myvts.connect()
+    await myvts.request_authenticate()
+    response_data = await myvts.request(myvts.vts_request.requestHotKeyList())
+    hotkey_list = []
+    for hotkey in response_data["data"]["availableHotkeys"]:
+        hotkey_list.append(hotkey["name"])
+    send_hotkey_request = myvts.vts_request.requestTriggerHotKey(hotkey_list[choice])
+    await myvts.request(send_hotkey_request)  # send request to play 'My Animation 1'
+    await myvts.close()
+
 #Here wherer the real shit begin      
 def run():
     try:
@@ -106,7 +136,7 @@ def run():
         StreamIDInputField.configure(show = "*")
 
         Innerframe.pack(pady=20,padx=20, fill="both",expand=True)
-
+        
         ChatConnected()
     except Exception as e:
         print(f"Error detect! Error Info:{e}")
@@ -114,18 +144,24 @@ def run():
 
 def ChatConnected():
     if chat.is_alive():
-        for c in chat.get().sync_items():
+        for c in chat.get().sync_items():         
             message = f'{c.author.name}:{c.message}'
             print(message)
             reply = GPTResponsed(message)
+            # asyncio.run(startvts())       
             speakEN(reply.replace("Luana-chan:", ""))
             Responsed.configure(text=reply)
             ChatLabel.configure(text=message)
             appendTextFile("Conversation_saver.txt",f"\n{message}")
             appendTextFile("Conversation_saver.txt",f"\n{reply}")
+        else:
+            asyncio.run(trigger(random.randint(0, 2)))
+            time.sleep(random.randint(0,5)) 
+
 
     root.after(10, ChatConnected)
 
+asyncio.run(connect_auth())
 root = customtkinter.CTk()
 root.title("GPT Vtube")
 width= root.winfo_screenwidth()               
@@ -153,3 +189,5 @@ ClearConversationLog.pack(pady=2)
 Innerframe = customtkinter.CTkFrame(master=frame)
 
 root.mainloop()
+
+print("closed program")
