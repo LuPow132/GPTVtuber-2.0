@@ -71,12 +71,16 @@ def speakEN(text):
     elif "shouting" in text or "shout" in text or "yell" in text or "SHOUT" in text or "YELL" in text:
         emotion = "Shouting"
     elif max_emotion == "Happy":
+        asyncio.run(trigger(3))
         emotion = "Cheerful"
     elif max_emotion == "Angry":
+        asyncio.run(trigger(4))
         emotion = "Angry"
     elif max_emotion == "Sad":
+        asyncio.run(trigger(5))
         emotion = "Sad"
     else:
+        asyncio.run(trigger(3))
         emotion = "Default"
 
     ssml_string = f'<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="{tts_model}" style="{emotion}"><prosody pitch="{pitch}">{text}</prosody></voice></speak>'
@@ -99,18 +103,19 @@ def GPTResponsed(text):
     return response.choices[0].message.content
 
 async def connect_auth():
+    global hotkey_list
     await myvts.connect()
     await myvts.request_authenticate_token()
-    await myvts.request_authenticate()
-    await myvts.close()
-
-async def trigger(choice):
-    await myvts.connect()
     await myvts.request_authenticate()
     response_data = await myvts.request(myvts.vts_request.requestHotKeyList())
     hotkey_list = []
     for hotkey in response_data["data"]["availableHotkeys"]:
         hotkey_list.append(hotkey["name"])
+    await myvts.close()
+
+async def trigger(choice):
+    await myvts.connect()
+    await myvts.request_authenticate()
     send_hotkey_request = myvts.vts_request.requestTriggerHotKey(hotkey_list[choice])
     await myvts.request(send_hotkey_request)  # send request to play 'My Animation 1'
     await myvts.close()
@@ -154,9 +159,10 @@ def ChatConnected():
             ChatLabel.configure(text=message)
             appendTextFile("Conversation_saver.txt",f"\n{message}")
             appendTextFile("Conversation_saver.txt",f"\n{reply}")
+            asyncio.run(trigger(6))
         else:
             asyncio.run(trigger(random.randint(0, 2)))
-            time.sleep(random.randint(0,5)) 
+            time.sleep(random.randint(0,3)) 
 
 
     root.after(10, ChatConnected)
