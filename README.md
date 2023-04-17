@@ -15,3 +15,7 @@ IDK IT JUST WORK
 
 ## Contact
 Gmail:rakkyrkm@gmail.com  | Discord:LuPow132#0987 (better use discord since I use gmail for recieve verification code only lol)
+
+## Support Me!
+After all you can support me at kofi!
+https://ko-fi.com/lupowdonationfoedu
