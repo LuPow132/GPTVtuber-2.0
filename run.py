@@ -22,6 +22,8 @@ plugin_info = {
     "developer": "LuPow",
     "authentication_token_path": "./token.txt"
 }
+global ReadingChat
+ReadingChat = True
 global myvts
 myvts = pyvts.vts(plugin_info=plugin_info)
 
@@ -35,6 +37,14 @@ customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
 
 #Random Bullshit function
+def ToggleReadingChat():
+    global ReadingChat
+    if ReadingChat == True:
+        ReadingChat = False
+    elif ReadingChat == False:
+        ReadingChat = True
+    print(ReadingChat)
+
 def appendTextFile(filename,input):
     with open(filename,"a", encoding='utf-8') as f:
         f.write(input)
@@ -152,14 +162,15 @@ def ChatConnected():
         for c in chat.get().sync_items():         
             message = f'{c.author.name}:{c.message}'
             print(message)
-            reply = GPTResponsed(message)
-            # asyncio.run(startvts())       
-            speakEN(reply.replace("Luana-chan:", ""))
-            Responsed.configure(text=reply)
-            ChatLabel.configure(text=message)
-            appendTextFile("Conversation_saver.txt",f"\n{message}")
-            appendTextFile("Conversation_saver.txt",f"\n{reply}")
-            asyncio.run(trigger(6))
+            if ReadingChat:
+                reply = GPTResponsed(message)
+                # asyncio.run(startvts())       
+                speakEN(reply.replace("Luana-chan:", ""))
+                Responsed.configure(text=reply)
+                ChatLabel.configure(text=message)
+                appendTextFile("Conversation_saver.txt",f"\n{message}")
+                appendTextFile("Conversation_saver.txt",f"\n{reply}")
+                asyncio.run(trigger(6))
         else:
             asyncio.run(trigger(random.randint(0, 2)))
             time.sleep(random.randint(0,3)) 
@@ -191,7 +202,9 @@ RunButton.pack(pady=5)
 
 ClearConversationLog = customtkinter.CTkButton(master=frame,text="Clear Conversation",font=("Roboto",16),command=ClearPreviousConversationLog)
 ClearConversationLog.pack(pady=2)
-    
+switch = customtkinter.CTkSwitch(master=frame, text="Reading Chat",command=ToggleReadingChat)    
+switch.select()
+switch.pack()
 Innerframe = customtkinter.CTkFrame(master=frame)
 
 root.mainloop()
