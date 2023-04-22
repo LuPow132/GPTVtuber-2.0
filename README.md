@@ -1,13 +1,29 @@
 [![License: MIT](https://img.shields.io/github/license/Genteki/pyvts?style=flat-square)](https://opensource.org/licenses/MIT)
 # GPTVtuber-2.0
-## Description
+# Description
 This is Vtuber AI made by LuPow using Azure tts and GPT3.5! All of the code write using python and a little bit of xml.
 This program may have GUI to it more freindly user! You can use this program for free in case of non-profit. If you want to use it for profit please contact me first.
 
+## Requirements?
+Python 3.11
+<br> Notepad(Or any IDE to edit some variable)
+<br> Azure TTS API key
+<br> OpenAI API key
+<br> VtubeStudio
+
+## How to install?
+download the whole github repo then extract the zip file. Open terminal and type `pip install -r requirements.txt` then wait for it to install all library. 
+After finish install all library you good to go!
+ 
+
 ## How to use?
-you just need to download the zip file and lunch the **'run.py'** and simply input your live stream youtube ID like
-Original link:`https://studio.youtube.com/video/FjIJr21TzZY/livestreaming`
-Your ID gonna be:`FjIJr21TzZY`
+1.paste all API key in `AUTH_KEY.py` 
+<br> 2.Open VtubeStudio
+<br> 3.lunch the`run.py` 
+<br> 4.Click aceppt plugin in Vtube Studio
+<br> 5.simply input your live stream youtube ID in GUI window like
+<br> Original link:`https://studio.youtube.com/video/FjIJr21TzZY/livestreaming`
+<br> Your ID gonna be:`FjIJr21TzZY`
 
 
 ## How program work?
