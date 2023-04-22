@@ -21,10 +21,15 @@ After finish install all library you good to go!
 <br> 2.Open VtubeStudio
 <br> 3.lunch the`run.py` 
 <br> 4.Click aceppt plugin in Vtube Studio
+![image](https://user-images.githubusercontent.com/68886157/233765330-3631c020-9073-4238-8572-0f9c00baf5e9.png)
+
 <br> 5.simply input your live stream youtube ID in GUI window like
+![image](https://user-images.githubusercontent.com/68886157/233765254-e4f2636b-5f8f-48da-bbe0-ebf83fdc8146.png)
 <br> Original link:`https://studio.youtube.com/video/FjIJr21TzZY/livestreaming`
 <br> Your ID gonna be:`FjIJr21TzZY`
 
+ENJOY!
+![image](https://user-images.githubusercontent.com/68886157/233765287-1a65a905-e11d-42c4-aeb3-be2480a8c649.png)
 
 ## How program work?
 IDK IT JUST WORK
