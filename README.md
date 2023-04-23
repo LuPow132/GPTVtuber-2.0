@@ -43,5 +43,5 @@ Gmail:rakkyrkm@gmail.com  | Discord:LuPow132#0987 (better use discord since I us
 
 ## Support Me!
 After all you can support me at kofi!
-https://ko-fi.com/lupowdonationfoedu
+https://ko-fi.com/lupowdonationforedu
 or just star⭐ my projrct!
