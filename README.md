@@ -34,9 +34,14 @@ ENJOY!
 ## How program work?
 IDK IT JUST WORK
 
+## Community
+we have discord community aswell here the invite link: https://discord.gg/ZQHYaSYRSK
+(feel free to come in talk share and help!
+
 ## Contact
 Gmail:rakkyrkm@gmail.com  | Discord:LuPow132#0987 (better use discord since I use gmail for recieve verification code only lol)
 
 ## Support Me!
 After all you can support me at kofi!
 https://ko-fi.com/lupowdonationfoedu
+or just star⭐ my projrct!
