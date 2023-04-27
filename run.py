@@ -1,4 +1,5 @@
 from tkinter import *
+from better_profanity import profanity
 import customtkinter
 import time
 import openai
@@ -24,6 +25,7 @@ plugin_info = {
 }
 global ReadingChat
 ReadingChat = True
+Filter = True
 global myvts
 myvts = pyvts.vts(plugin_info=plugin_info)
 
@@ -44,6 +46,14 @@ def ToggleReadingChat():
     elif ReadingChat == False:
         ReadingChat = True
     print(ReadingChat)
+
+def ToggleFilter():
+    global Filter
+    if Filter == True:
+        Filter = False
+    elif Filter == False:
+        Filter = True
+    print(Filter)
 
 def appendTextFile(filename,input):
     with open(filename,"a", encoding='utf-8') as f:
@@ -67,7 +77,7 @@ def overwirteTextFile(filename,text):
         f.close()
 def ClearPreviousConversationLog():
 
-    clearTextFile("Conversation_saver.txt")
+    clearTextFile("assets/Conversation_saver.txt")
     print("clear conversation file already!")
 
 #advance function
@@ -100,7 +110,7 @@ def GPTResponsed(text):
     response = openai.ChatCompletion.create(
     model=ChatgptModel,
     messages=[
-        {"role": "system", "content": readTextFile("Preprompt.txt") + readTextFile("TrainModel.txt") + readTextFile("Conversation_saver.txt")},
+        {"role": "system", "content": readTextFile("assets/Preprompt.txt") + readTextFile("assets/TrainModel.txt") + readTextFile("assets/Conversation_saver.txt")},
         {"role": "user", "content": text}
     ],
     temperature=.7,
@@ -163,13 +173,16 @@ def ChatConnected():
             message = f'{c.author.name}:{c.message}'
             print(message)
             if ReadingChat:
-                reply = GPTResponsed(message)
-                # asyncio.run(startvts())       
-                speakEN(reply.replace("Luana-chan:", ""))
-                Responsed.configure(text=reply)
-                ChatLabel.configure(text=message)
-                appendTextFile("Conversation_saver.txt",f"\n{message}")
-                appendTextFile("Conversation_saver.txt",f"\n{reply}")
+                if Filter and profanity.contains_profanity(message): 
+                    print("*Filter*")
+                else:
+                    reply = GPTResponsed(message)
+                    # asyncio.run(startvts())       
+                    speakEN(reply.replace("Luana-chan:", ""))
+                    Responsed.configure(text=reply)
+                    ChatLabel.configure(text=message)
+                    appendTextFile("assets/Conversation_saver.txt",f"\n{message}")
+                    appendTextFile("assets/Conversation_saver.txt",f"\n{reply}")
                 asyncio.run(trigger(6))
         else:
             asyncio.run(trigger(random.randint(0, 2)))
@@ -202,9 +215,14 @@ RunButton.pack(pady=5)
 
 ClearConversationLog = customtkinter.CTkButton(master=frame,text="Clear Conversation",font=("Roboto",16),command=ClearPreviousConversationLog)
 ClearConversationLog.pack(pady=2)
-switch = customtkinter.CTkSwitch(master=frame, text="Reading Chat",command=ToggleReadingChat)    
-switch.select()
-switch.pack()
+switchReadingChat = customtkinter.CTkSwitch(master=frame, text="Reading Chat",command=ToggleReadingChat)    
+switchReadingChat.select()
+switchReadingChat.pack()
+
+switchFilter = customtkinter.CTkSwitch(master=frame, text="Filter Bad Words",command=ToggleFilter)    
+switchFilter.select()
+switchFilter.pack()
+
 Innerframe = customtkinter.CTkFrame(master=frame)
 
 root.mainloop()
