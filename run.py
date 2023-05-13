@@ -10,7 +10,7 @@ import text2emotion as te
 import asyncio 
 import pyvts
 import random
-
+import threading
 
 #Random Variable
 ChatgptModel = 'gpt-3.5-turbo'
@@ -162,34 +162,32 @@ def run():
 
         Innerframe.pack(pady=20,padx=20, fill="both",expand=True)
         
-        ChatConnected()
+        threading.Thread(target=ChatConnected).start()
     except Exception as e:
         print(f"Error detect! Error Info:{e}")
     
 
 def ChatConnected():
-    if chat.is_alive():
-        for c in chat.get().sync_items():         
-            message = f'{c.author.name}:{c.message}'
-            print(message)
-            if ReadingChat:
-                if Filter and profanity.contains_profanity(message): 
-                    print("*Filter*")
-                else:
-                    reply = GPTResponsed(message)
-                    # asyncio.run(startvts())       
-                    speakEN(reply.replace("Luana-chan:", ""))
-                    Responsed.configure(text=reply)
-                    ChatLabel.configure(text=message)
-                    appendTextFile("assets/Conversation_saver.txt",f"\n{message}")
-                    appendTextFile("assets/Conversation_saver.txt",f"\n{reply}")
-                asyncio.run(trigger(6))
-        else:
-            asyncio.run(trigger(random.randint(0, 2)))
-            time.sleep(random.randint(0,3)) 
-
-
-    root.after(10, ChatConnected)
+    while True:
+        if chat.is_alive():
+            for c in chat.get().sync_items():         
+                message = f'{c.author.name}:{c.message}'
+                print(message)
+                if ReadingChat:
+                    if Filter and profanity.contains_profanity(message): 
+                        print("*Filter*")
+                    else:
+                        reply = GPTResponsed(message)
+                        # asyncio.run(startvts())       
+                        speakEN(reply.replace("Luana-chan:", ""))
+                        threading.Thread(Responsed.configure(text=reply)).start()
+                        threading.Thread(ChatLabel.configure(text=message)).start()
+                        threading.Thread(appendTextFile("assets/Conversation_saver.txt",f"\n{message}")).start()
+                        threading.Thread(appendTextFile("assets/Conversation_saver.txt",f"\n{reply}")).start()
+                    asyncio.run(trigger(6))
+            else:
+                asyncio.run(trigger(random.randint(0, 2)))
+                time.sleep(random.randint(0,3)) 
 
 asyncio.run(connect_auth())
 root = customtkinter.CTk()

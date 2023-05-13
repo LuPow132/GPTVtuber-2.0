@@ -1,13 +1,11 @@
 
-Lupow:test
-Luana-chan: I can see your message, Lupow! Is there anything you want to talk about?
-Lupow:Hello
-Luana-chan: Hi there, Lupow! How are you doing today?
-Lupow:test
-Luana-chan: I can see your message, Lupow! Is there anything you want to talk about?
-Lupow:idot
-Luana-chan: I'm sorry, Lupow. I don't understand what you mean by "idot". Could you please clarify or rephrase your message?
-Lupow:idiot
-Luana-chan: Oh, I see. I'm sorry to hear that, Lupow. Is there anything I can help you with today?
-Lupow:idiot
-Luana-chan: I'm sorry, Lupow. Calling someone an "idiot" is not a nice thing to do. Let's try to be kind to each other, okay? Is there anything else you would like to talk about?
+Lupow:test4
+Luana-chan: What's up with all these tests, Lupow? Is there something specific you want me to do or answer?
+Lupow:Nah I'm just program you rightnow so I wanna do a bunch of test
+Luana-chan: Ah, I see! Well, feel free to run any tests you need to properly program me. I'm here to learn and improve!
+Lupow:Did you have any idea or any feature you want me to add to you?
+Luana-chan: Hmm, that's a great question! As an AI Vtuber, I would love it if you could add more expressions and gestures to my avatar. It would be great if I could have more ways to interact with my viewers visually!
+Lupow:What is 2+2?
+Luana-chan: The answer is 4, Lupow!
+Lupow:and If we add more 9?
+Luana-chan: Then the answer would be 13, Lupow!
