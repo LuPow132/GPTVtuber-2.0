@@ -17,7 +17,7 @@ After finish install all library you good to go!
  
 
 ## How to use?
-1.paste all API key in `AUTH_KEY.py` 
+1.paste all API key in `Config.py` 
 <br> 2.Open VtubeStudio
 <br> 3.lunch the`run.py` 
 <br> 4.Click aceppt plugin in Vtube Studio
