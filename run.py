@@ -28,6 +28,7 @@ ReadingChat = True
 Filter = True
 global myvts
 myvts = pyvts.vts(plugin_info=plugin_info)
+dead_time = 30
 
 #Azure TTS config
 speech_config = speechsdk.SpeechConfig(subscription=AzureApiKey, region="southeastasia")
@@ -81,6 +82,12 @@ def ClearPreviousConversationLog():
     print("clear conversation file already!")
 
 #advance function
+def RandomTopic():
+    with open("assets/RandomTopic.txt", 'rb') as file:
+        lines = file.readlines()
+        random_line = random.choice(lines).decode('cp874')
+    speakEN(random_line.strip())
+    threading.Thread(appendTextFile("assets/Conversation_saver.txt",f"\nLuana-chan:{random_line.strip()}")).start()
 
 def speakEN(text):
     emotion_dict = te.get_emotion(text)
@@ -161,33 +168,40 @@ def run():
         StreamIDInputField.configure(show = "*")
 
         Innerframe.pack(pady=20,padx=20, fill="both",expand=True)
-        
         threading.Thread(target=ChatConnected).start()
     except Exception as e:
         print(f"Error detect! Error Info:{e}")
     
 
 def ChatConnected():
+    start_time = time.time()
     while True:
-        if chat.is_alive():
-            for c in chat.get().sync_items():         
-                message = f'{c.author.name}:{c.message}'
-                print(message)
-                if ReadingChat:
-                    if Filter and profanity.contains_profanity(message): 
-                        print("*Filter*")
-                    else:
-                        reply = GPTResponsed(message)
-                        # asyncio.run(startvts())       
-                        speakEN(reply.replace("Luana-chan:", ""))
-                        threading.Thread(Responsed.configure(text=reply)).start()
-                        threading.Thread(ChatLabel.configure(text=message)).start()
-                        threading.Thread(appendTextFile("assets/Conversation_saver.txt",f"\n{message}")).start()
-                        threading.Thread(appendTextFile("assets/Conversation_saver.txt",f"\n{reply}")).start()
-                    asyncio.run(trigger(6))
-            else:
-                asyncio.run(trigger(random.randint(0, 2)))
-                time.sleep(random.randint(0,3)) 
+        if time.time() - start_time >= dead_time:
+            print("Call random Topic")
+            RandomTopic()
+            start_time = time.time()
+        else:
+            if chat.is_alive():
+                for c in chat.get().sync_items(): 
+                    start_time = time.time()        
+                    message = f'{c.author.name}:{c.message}'
+                    print(message)
+                    if ReadingChat:
+                        if Filter and profanity.contains_profanity(message): 
+                            print("*Filter*")
+                        else:
+                            reply = GPTResponsed(message)
+                            # asyncio.run(startvts())       
+                            threading.Thread(speakEN(reply.replace("Luana-chan:", ""))).start()
+                            threading.Thread(Responsed.configure(text=reply)).start()
+                            threading.Thread(ChatLabel.configure(text=message)).start()
+                            threading.Thread(appendTextFile("assets/Conversation_saver.txt",f"\n{message}")).start()
+                            threading.Thread(appendTextFile("assets/Conversation_saver.txt",f"\n{reply}")).start()
+                        asyncio.run(trigger(6))
+                        start_time = time.time() 
+                else:
+                    asyncio.run(trigger(random.randint(0, 2)))
+                    time.sleep(random.randint(0,3)) 
 
 asyncio.run(connect_auth())
 root = customtkinter.CTk()

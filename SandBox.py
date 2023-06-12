@@ -1,28 +1,19 @@
-import os
-import azure.cognitiveservices.speech as speechsdk
-import AUTH_KEY
+import time
 
-# This example requires environment variables named "SPEECH_KEY" and "SPEECH_REGION"
-speech_config = speechsdk.SpeechConfig(subscription=AUTH_KEY.AZURE_KEY, region="southeastasia")
-audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
+def run_function1():
+    print("Function 1 called.")
 
-# The language of the voice that speaks.
-speech_config.speech_synthesis_voice_name='en-US-JennyNeural'
+def run_function2():
+    global start_time
+    start_time = time.time()
+    print("Function 2 called.")
 
-speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, audio_config=audio_config)
+start_time = time.time()
 
-# Get text from the console and synthesize to the default speaker.
-print("Enter some text that you want to speak >")
-text = input()
+# Wait for 5 seconds
+time.sleep(5)
 
-speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
-
-if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-    print("Speech synthesized for text [{}]".format(text))
-elif speech_synthesis_result.reason == speechsdk.ResultReason.Canceled:
-    cancellation_details = speech_synthesis_result.cancellation_details
-    print("Speech synthesis canceled: {}".format(cancellation_details.reason))
-    if cancellation_details.reason == speechsdk.CancellationReason.Error:
-        if cancellation_details.error_details:
-            print("Error details: {}".format(cancellation_details.error_details))
-            print("Did you set the speech resource key and region values?")
+if time.time() - start_time >= 5:
+    run_function1()
+else:
+    run_function2()
