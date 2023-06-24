@@ -32,7 +32,7 @@ ENJOY!
 ![image](https://user-images.githubusercontent.com/68886157/233765287-1a65a905-e11d-42c4-aeb3-be2480a8c649.png)
 
 ## How program work?
-IDK IT JUST WORK
+It gonna link to youtube live based on Youtube ID you give it. Then it will get comment and send to GPT3.5Turbo then answer based on user setting(personality) and after it finish it will send to AzureTTS for making Text to speech to speak. and link the emotion to VtubeStu,dio using pyvts then save all conversation to log for use in the next time.
 
 ## Community
 we have discord community aswell here the invite link: https://discord.gg/ZQHYaSYRSK
