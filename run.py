@@ -1,18 +1,10 @@
 from tkinter import *
 from better_profanity import profanity
-import customtkinter
-import time
-import openai
-import pytchat
-import AUTH_KEY
-import azure.cognitiveservices.speech as speechsdk
 import text2emotion as te
-import asyncio 
-import pyvts
-import random
-import threading
+import azure.cognitiveservices.speech as speechsdk
+import customtkinter,time,openai,pytchat,AUTH_KEY,asyncio,pyvts,random,threading
 
-#Random Variable
+#Configuration
 ChatgptModel = 'gpt-3.5-turbo'
 pitch = "+20Hz"
 tts_model = "en-US-JaneNeural"
@@ -23,23 +15,25 @@ plugin_info = {
     "developer": "LuPow",
     "authentication_token_path": "./token.txt"
 }
+dead_time = 30
+
+#SETUP VARIABLE
 global ReadingChat
+global myvts
 ReadingChat = True
 Filter = True
-global myvts
 myvts = pyvts.vts(plugin_info=plugin_info)
-dead_time = 30
 
 #Azure TTS config
 speech_config = speechsdk.SpeechConfig(subscription=AzureApiKey, region="southeastasia")
 audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
 speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config,audio_config=audio_config)
 
-#Tkinter thing here
+#Tkinter configuration
 customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
 
-#Random Bullshit function
+#Random Function that make my life feel easier
 def ToggleReadingChat():
     global ReadingChat
     if ReadingChat == True:
@@ -81,7 +75,8 @@ def ClearPreviousConversationLog():
     clearTextFile("assets/Conversation_saver.txt")
     print("clear conversation file already!")
 
-#advance function
+#Function that make this program work like magic
+#Pick up Random topic to talk about
 def RandomTopic():
     with open("assets/RandomTopic.txt", 'rb') as file:
         lines = file.readlines()
@@ -89,31 +84,38 @@ def RandomTopic():
     speakEN(random_line.strip())
     threading.Thread(appendTextFile("assets/Conversation_saver.txt",f"\nLuana-chan:{random_line.strip()}")).start()
 
+#speak using Azure TTS and detect emotion of text(I hate nltk)
 def speakEN(text):
+    #get emotion from text
     emotion_dict = te.get_emotion(text)
+    #find the most emotion score
     max_emotion = max(emotion_dict, key=emotion_dict.get)
 
+    #defind emotion for SSML azure TTS
     if "whisper" in text or "whispering" in text:
         emotion = "Whispering"
     elif "shouting" in text or "shout" in text or "yell" in text or "SHOUT" in text or "YELL" in text:
         emotion = "Shouting"
     elif max_emotion == "Happy":
-        asyncio.run(trigger(3))
+        #asyncio.run(trigger(3))
         emotion = "Cheerful"
     elif max_emotion == "Angry":
-        asyncio.run(trigger(4))
+        #asyncio.run(trigger(4))
         emotion = "Angry"
     elif max_emotion == "Sad":
-        asyncio.run(trigger(5))
+        #asyncio.run(trigger(5))
         emotion = "Sad"
     else:
-        asyncio.run(trigger(3))
+        #asyncio.run(trigger(3))
         emotion = "Default"
 
+    #Set SSML text for using to configuration voice
     ssml_string = f'<speak version="1.0" xmlns="https://www.w3.org/2001/10/synthesis" xml:lang="en-US"><voice name="{tts_model}" style="{emotion}"><prosody pitch="{pitch}">{text}</prosody></voice></speak>'
     result = speech_synthesizer.speak_ssml_async(ssml_string).get()
 
+#Get responsed from openAI
 def GPTResponsed(text):
+    #Get response by attach personality and old conversation and prompt that user give
     response = openai.ChatCompletion.create(
     model=ChatgptModel,
     messages=[
@@ -125,10 +127,14 @@ def GPTResponsed(text):
     frequency_penalty=0.12,
     presence_penalty=0.2
     )     
+    #print reply and how much token spend to console
     print(f'Reply:{response.choices[0].message.content}')
     print(f'*Succes Generate response token spend: {response.usage.total_tokens}')
+
+    #return responed
     return response.choices[0].message.content
 
+#connect to VtubeStudio to use api
 async def connect_auth():
     global hotkey_list
     await myvts.connect()
@@ -140,6 +146,7 @@ async def connect_auth():
         hotkey_list.append(hotkey["name"])
     await myvts.close()
 
+#trigger Hotkey on VtubeStudio
 async def trigger(choice):
     await myvts.connect()
     await myvts.request_authenticate()
@@ -147,7 +154,7 @@ async def trigger(choice):
     await myvts.request(send_hotkey_request)  # send request to play 'My Animation 1'
     await myvts.close()
 
-#Here wherer the real shit begin      
+#Help 
 def run():
     try:
         global chat
@@ -197,11 +204,11 @@ def ChatConnected():
                             threading.Thread(ChatLabel.configure(text=message)).start()
                             threading.Thread(appendTextFile("assets/Conversation_saver.txt",f"\n{message}")).start()
                             threading.Thread(appendTextFile("assets/Conversation_saver.txt",f"\n{reply}")).start()
-                        asyncio.run(trigger(6))
+                        #asyncio.run(trigger(6))
                         start_time = time.time() 
-                else:
-                    asyncio.run(trigger(random.randint(0, 2)))
-                    time.sleep(random.randint(0,3)) 
+                #else:
+                    #asyncio.run(trigger(random.randint(0, 2)))
+                    #time.sleep(random.randint(0,3)) 
 
 asyncio.run(connect_auth())
 root = customtkinter.CTk()
